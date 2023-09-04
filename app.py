@@ -1,6 +1,3 @@
-#!pip install gradio
-#!pip install ibm-watson
-
 import json
 from ibm_watson import NaturalLanguageUnderstandingV1
 from ibm_watson.natural_language_understanding_v1 import Features, EmotionOptions, EntitiesOptions, KeywordsOptions, SentimentOptions
@@ -28,35 +25,11 @@ import gradio as gr
 
 def chatbot(input_text):
     # Initialize the Natural Language Understanding API
-    #nlu = NaturalLanguageUnderstandingV1('https://api.us-south.natural-language-understanding.ibmcloud.com', api_key='PZ8sVI4DUjfwikksw96KvyUd7GJRFBLMNqFPTVvQAP7x')
     nluVar = nlu
 
     # Analyze the input text to identify the user's intent
-    #1 response = nlu.analyze(text=input_text, features=Features(emotion=EmotionOptions(targets=["happy"]))).get_result()
-    #2 response = nluVar.analyze(text=input_text, features={'sentiment': {}, 'entities': {}}).get_result()
-    ''' response = nlu.analyze(
-              text=input_text,
-              features=Features(emotion=EmotionOptions(targets=["happy"]))).get_result() 
-    '''
-    
-
     response = nluVar.analyze(text=input_text, features=Features(entities=EntitiesOptions(),sentiment=SentimentOptions(),keywords=KeywordsOptions())).get_result()
-    '''
-    # Extract relevant information from the response
-    entities = response.result['entities']
-    keywords = response.result['keywords']
-
-    # Print the detected entities and keywords
-    print("Entities:")
-    for entity in entities:
-      print(f"{entity['type']} : {entity['text']}")
-
-    print("\nKeywords:")
-    for keyword in keywords:
-      print(keyword['text'])
-    '''
-
-    
+       
     sentimentOutput = response["sentiment"]
     documentOutput = sentimentOutput["document"]
     labelOutput = documentOutput["label"]
@@ -66,9 +39,9 @@ def chatbot(input_text):
     formatted_response = json.dumps(response, indent=4)
     #a = print(formatted_response)
     print(formatted_response)
-    return(finalAns)
-    
+    return(finalAns)   # output of this chatbot function
 
+    # I DID NOT EXECUTE THE FOLLOWING INTENT CODE AS THE ABOVE FUNCTION COULD NOT FIND ENTITIES FOR EACH PROMPT/INPUT
     intent = response['entities'][0]['entity']
     # Determine the appropriate response based on the user's intent
     if intent == 'SeekingSupport':
@@ -77,7 +50,6 @@ def chatbot(input_text):
         return "It sounds like you're feeling really overwhelmed right now. Have you considered reaching out to a therapist or counselor for help?"
     else:
         return "I didn't understand your message. Can you please rephrase or provide more context?"
-
 
 #input_text = input()
 #chatbot(input_text)
@@ -89,8 +61,6 @@ interface = gr.Interface(
     outputs="text",
     title="Mental Health Chatbot",
     description="A chatbot designed to provide support and resources for people struggling with mental health issues. It tells if you are showing Positive or Negative mental health signs",
-    # buttons=["Seeking Support", "Feeling Overwhelmed"],
-    # button_styles={"background-color": ["#4CAF50", "#F8E231"]}
 )
 
 interface.launch()
